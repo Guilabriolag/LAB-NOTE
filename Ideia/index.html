@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Lab Ideas OS V4</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.json">
+
+<style>
+body { font-family: Arial; background:#0f0f0f; color:#fff; padding:15px; }
+input, button { width:100%; padding:10px; margin:5px 0; border-radius:8px; border:none; }
+button { background:#2a2a2a; color:#fff; }
+.card { background:#1e1e1e; padding:10px; margin:10px 0; border-radius:10px; }
+.tag { font-size:12px; margin-right:5px; cursor:pointer; }
+.chat { background:#111; padding:10px; border-radius:10px; margin-top:10px; }
+</style>
+</head>
+
+<body>
+
+<h1>🧠 Lab Ideas OS V4</h1>
+
+<input id="search" placeholder="Buscar...">
+<button onclick="render()">🔍 Buscar</button>
+
+<button onclick="combineIdeas()">🎲 Combinar</button>
+
+<button onclick="syncToGitHub()">☁️ Sync GitHub</button>
+<button onclick="exportIdeas()">💾 Export</button>
+
+<hr>
+
+<h3>Nova ideia</h3>
+<input id="nome" placeholder="Nome">
+<input id="descricao" placeholder="Descrição">
+<input id="tags" placeholder="tags (btc,jogo)">
+<input id="nivel" type="number" placeholder="Nota">
+
+<button onclick="addIdea()">Salvar</button>
+
+<hr>
+
+<div id="ideas"></div>
+
+<h3>🤖 Oráculo</h3>
+<input id="chatInput" placeholder="Pergunte algo...">
+<button onclick="chatOracle()">Enviar</button>
+
+<div id="chatBox" class="chat"></div>
+
+<script>
+
+// ===== STORAGE =====
+let ideas = JSON.parse(localStorage.getItem("ideas")) || [];
+let chatHistory = [];
+
+// ===== SAVE =====
+function save() {
+  localStorage.setItem("ideas", JSON.stringify(ideas));
+}
+
+// ===== ADD =====
+function addIdea() {
+  ideas.push({
+    nome: nome.value,
+    descricao: descricao.value,
+    tags: tags.value.split(","),
+    nivel: parseInt(nivel.value || 0),
+    xp: 0
+  });
+
+  save();
+  render();
+}
+
+// ===== XP SYSTEM =====
+function addXP(index) {
+  ideas[index].xp += 1;
+  save();
+  render();
+}
+
+// ===== RENDER =====
+function render() {
+  let s = search.value.toLowerCase();
+  ideasDiv.innerHTML = "";
+
+  ideas.forEach((i, idx) => {
+    if (i.nome.toLowerCase().includes(s)) {
+      ideasDiv.innerHTML += `
+        <div class="card">
+          <b>${i.nome}</b> ⭐${i.nivel} XP:${i.xp}
+          <p>${i.descricao}</p>
+          <button onclick="addXP(${idx})">+XP</button>
+        </div>
+      `;
+    }
+  });
+}
+
+// ===== COMBINE =====
+function combineIdeas() {
+  let sel = [...ideas].sort(()=>0.5-Math.random()).slice(0,3);
+  alert(sel.map(i=>i.nome).join(" + "));
+}
+
+// ===== EXPORT =====
+function exportIdeas() {
+  let blob = new Blob([JSON.stringify(ideas)], {type:"application/json"});
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "ideas.json";
+  a.click();
+}
+
+// ===== GITHUB SYNC =====
+async function syncToGitHub() {
+
+  let token = prompt("GitHub Token");
+  let repo = prompt("Repo (user/repo)");
+  
+  let content = btoa(JSON.stringify(ideas, null, 2));
+
+  await fetch(`https://api.github.com/repos/${repo}/contents/ideas.json`, {
+    method: "PUT",
+    headers: {
+      "Authorization": "token " + token,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: "update ideas",
+      content: content
+    })
+  });
+
+  alert("Enviado pro GitHub 🚀");
+}
+
+// ===== ORACLE CHAT =====
+async function chatOracle() {
+
+  let msg = chatInput.value;
+
+  chatHistory.push({role:"user", content:msg});
+
+  let API_KEY = "COLE_SUA_API";
+
+  let res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method:"POST",
+    headers:{
+      "Authorization":"Bearer "+API_KEY,
+      "Content-Type":"application/json"
+    },
+    body: JSON.stringify({
+      model:"gpt-4o-mini",
+      messages: [
+        {role:"system", content:"Você é um oráculo de ideias."},
+        ...chatHistory,
+        {role:"user", content:"Contexto: "+JSON.stringify(ideas)}
+      ]
+    })
+  });
+
+  let data = await res.json();
+  let reply = data.choices[0].message.content;
+
+  chatHistory.push({role:"assistant", content:reply});
+
+  chatBox.innerHTML += "<br><b>Você:</b> "+msg;
+  chatBox.innerHTML += "<br><b>Oráculo:</b> "+reply;
+}
+
+// ===== INIT =====
+render();
+
+// ===== PWA =====
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+
+</script>
+
+</body>
+</html>
