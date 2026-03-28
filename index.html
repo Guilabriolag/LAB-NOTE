@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0D0A06">
+<title>Diário Pessoal · Ideias & Projetos</title>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Caveat:wght@400;600;700&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+
+<style>
+/* ========== ESTILOS (MANTIDOS DA VERSÃO ANTERIOR) ========== */
+:root {
+  --p0:#FAF6EE; --p1:#F3ECDE; --p2:#E8DDC8; --p3:#D9CBB0;
+  --i0:#150F05; --i1:#2E2010; --i2:#5C4020; --i3:#9A7A50;
+  --gold:#BF8C2A; --goldl:#DDB050; --goldf:#F5DFA0;
+  --red:#7A1E1E; --navy:#1A2E4A; --sage:#2A4030;
+  --bg:#0D0A06; --bgm:#1A1208; --bgl:#2E1E0A;
+  --r:5px; --ts:0 2px 12px rgba(0,0,0,.15);
+  --book-w: min(700px, 100vw);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body {
+  font-family:'Cormorant Garamond',Georgia,serif;
+  background:var(--bg);
+  color:var(--i0);
+  min-height:100vh;
+  -webkit-tap-highlight-color:transparent;
+}
+
+body::after {
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  opacity:.28;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='.055'/%3E%3C/svg%3E");
+}
+
+[contenteditable]{outline:none;user-select:text;-webkit-user-select:text;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--p3);border-radius:4px;}
+
+/* ========== TELA DE LOGIN COM SENHA ÚNICA ========== */
+#screen-login {
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background: radial-gradient(ellipse 70% 50% at 15% 25%, #3D2010 0%,transparent 55%),
+              radial-gradient(ellipse 55% 70% at 85% 75%, #1A0E04 0%,transparent 55%),
+              linear-gradient(155deg,#281408 0%,#0D0802 100%);
+  position:relative;
+}
+
+.login-book {
+  width:min(340px,88vw);
+  background:linear-gradient(160deg,#3C1E0C 0%,#1E0E06 100%);
+  border-radius:3px 12px 12px 3px;
+  padding:44px 32px;
+  border:1px solid rgba(191,140,42,.18);
+  border-left:14px solid #06030A;
+  box-shadow: -10px 0 0 #06030A, -16px 6px 28px rgba(0,0,0,.7), 6px 0 32px rgba(0,0,0,.45);
+}
+
+.login-frame {
+  border:1px solid rgba(191,140,42,.2);
+  border-radius:3px;padding:26px 22px;
+  text-align:center;
+}
+
+.login-ornament {
+  font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.4em;
+  color:rgba(191,140,42,.4);text-transform:uppercase;
+  margin-bottom:20px;
+}
+
+.login-title {
+  font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;
+  color:#EDD898;margin-bottom:8px;
+}
+
+.login-sub {
+  font-family:'Caveat',cursive;font-size:.95rem;
+  color:rgba(191,140,42,.6);margin-bottom:24px;
+}
+
+.login-input {
+  width:100%;padding:12px 14px;margin-bottom:12px;
+  background:rgba(250,246,238,.12);
+  border:1px solid rgba(191,140,42,.3);
+  border-radius:5px;
+  font-family:'Cormorant Garamond',serif;font-size:1rem;
+  color:#EDD898;
+  outline:none;
+  transition:all .2s;
+}
+.login-input:focus {
+  border-color:var(--gold);
+  background:rgba(250,246,238,.2);
+}
+.login-input::placeholder {
+  color:rgba(237,216,152,.4);
+}
+
+.login-btn {
+  width:100%;padding:12px;
+  background:linear-gradient(135deg,#BF8C2A,#7A540E);
+  color:#F8EDD0;border:none;border-radius:5px;
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:1.1rem;font-weight:600;
+  cursor:pointer;transition:all .2s;
+  margin-top:8px;
+}
+.login-btn:hover {
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+
+.login-hint {
+  font-family:'DM Mono',monospace;font-size:.62rem;
+  color:rgba(255,255,255,.3);
+  margin-top:20px;
+  letter-spacing:.04em;
+}
+
+.login-error {
+  color:#D97A3C;
+  font-size:.75rem;
+  margin-top:8px;
+  font-family:'DM Mono',monospace;
+  min-height:24px;
+}
+
+/* ========== EDITOR (VERSÃO SIMPLIFICADA E ESTÁVEL) ========== */
+#screen-editor {
+  display:none;
+  flex-direction:column;
+  min-height:100vh;
+}
+
+.toolbar {
+  background:linear-gradient(to bottom,var(--bgm),var(--bg));
+  border-bottom:1px solid rgba(191,140,42,.2);
+  padding:8px 12px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+.t-btn {
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--r);
+  color:rgba(255,255,255,.75);
+  padding:6px 12px;
+  font-family:'DM Mono',monospace;
+  font-size:.7rem;
+  cursor:pointer;
+  transition:all .15s;
+  white-space:nowrap;
+}
+.t-btn:hover {
+  background:rgba(191,140,42,.22);
+  border-color:rgba(191,140,42,.4);
+  color:#fff;
+}
+.t-btn.danger:hover {
+  background:rgba(180,30,30,.3);
+}
+.t-gap{flex:1;}
+.t-nav-inf {
+  font-family:'Caveat',cursive;
+  font-size:1rem;
+  color:rgba(191,140,42,.8);
+  padding:0 6px;
+}
+
+/* Área de conteúdo */
+.content-area {
+  flex:1;
+  background:var(--p0);
+  min-height:calc(100vh - 52px);
+  position:relative;
+}
+
+.content-inner {
+  max-width:800px;
+  margin:0 auto;
+  padding:48px 32px 120px;
+  position:relative;
+  z-index:2;
+}
+
+/* Blocos */
+.bloco {
+  position:relative;
+  margin-bottom:24px;
+  transition:box-shadow .15s;
+}
+.bloco:hover .bloco-tools {
+  opacity:1;
+}
+.bloco-tools {
+  position:absolute;
+  top:-28px;
+  right:0;
+  display:flex;
+  gap:4px;
+  opacity:0;
+  transition:opacity .15s;
+  background:var(--bg);
+  border:1px solid rgba(191,140,42,.25);
+  border-radius:5px;
+  padding:2px 4px;
+  z-index:10;
+}
+.bloco-tool {
+  background:transparent;
+  border:none;
+  color:rgba(255,255,255,.7);
+  padding:2px 8px;
+  font-size:.65rem;
+  cursor:pointer;
+  border-radius:3px;
+  font-family:'DM Mono',monospace;
+}
+.bloco-tool:hover {
+  background:rgba(255,255,255,.1);
+  color:#fff;
+}
+.bloco-tool.del:hover {
+  background:rgba(200,30,30,.4);
+}
+
+.ed {
+  width:100%;
+  outline:none;
+  border:none;
+  background:transparent;
+  display:block;
+  user-select:text;
+}
+.ed:empty::before {
+  content:attr(data-ph);
+  color:var(--i3);
+  pointer-events:none;
+}
+
+.t-h1 .ed {
+  font-family:'Cormorant Garamond',serif;
+  font-size:2rem;
+  font-weight:700;
+  font-style:italic;
+  color:var(--i0);
+  border-bottom:2px solid var(--gold);
+  padding-bottom:8px;
+}
+.t-h2 .ed {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.3rem;
+  font-style:italic;
+  color:var(--i1);
+}
+.t-p .ed {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem;
+  line-height:1.8rem;
+  color:var(--i0);
+  min-height:2rem;
+}
+.t-q blockquote {
+  border-left:3px solid var(--gold);
+  padding:8px 0 8px 20px;
+  margin:0;
+}
+.t-q .ed {
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:1.1rem;
+  line-height:1.7;
+  color:var(--i1);
+}
+
+/* Checklist */
+.t-checklist {
+  background:var(--p1);
+  border-radius:8px;
+  padding:16px;
+  margin:12px 0;
+}
+.checklist-item {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:8px 0;
+  font-family:'Caveat',cursive;
+  font-size:1.05rem;
+  border-bottom:1px solid var(--p2);
+}
+.checklist-item:last-child {
+  border-bottom:none;
+}
+.checklist-check {
+  width:20px;
+  height:20px;
+  cursor:pointer;
+  accent-color:var(--gold);
+}
+.checklist-text {
+  flex:1;
+  outline:none;
+  background:transparent;
+  border:none;
+  font-family:'Caveat',cursive;
+  font-size:1rem;
+  color:var(--i1);
+}
+.checklist-text:focus {
+  outline:none;
+}
+.checklist-item.done .checklist-text {
+  text-decoration:line-through;
+  color:var(--i3);
+}
+.checklist-add {
+  margin-top:12px;
+  padding:6px 12px;
+  background:transparent;
+  border:1px dashed var(--p3);
+  border-radius:20px;
+  color:var(--i2);
+  font-family:'DM Mono',monospace;
+  font-size:.7rem;
+  cursor:pointer;
+  transition:all .2s;
+  width:100%;
+  text-align:center;
+}
+.checklist-add:hover {
+  border-color:var(--gold);
+  color:var(--gold);
+}
+
+/* Shelf */
+.shelf {
+  position:sticky;
+  bottom:0;
+  background:linear-gradient(to top,var(--bg),var(--bgm));
+  border-top:1px solid rgba(191,140,42,.2);
+  padding:8px 12px;
+  z-index:50;
+}
+.shelf-lbl {
+  font-family:'DM Mono',monospace;
+  font-size:.6rem;
+  color:rgba(191,140,42,.5);
+  margin-bottom:6px;
+  letter-spacing:.1em;
+}
+.shelf-row {
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  flex-wrap:wrap;
+}
+.s-item {
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--r);
+  padding:5px 12px;
+  color:rgba(255,255,255,.7);
+  font-family:'DM Mono',monospace;
+  font-size:.7rem;
+  cursor:pointer;
+  transition:all .15s;
+  white-space:nowrap;
+}
+.s-item:hover {
+  background:rgba(191,140,42,.2);
+  border-color:rgba(191,140,42,.4);
+  transform:translateY(-2px);
+}
+
+/* Toast */
+#toast {
+  position:fixed;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--bg);
+  color:rgba(255,255,255,.9);
+  padding:8px 20px;
+  border-radius:30px;
+  font-family:'DM Mono',monospace;
+  font-size:.7rem;
+  border:1px solid rgba(191,140,42,.3);
+  opacity:0;
+  transition:opacity .2s;
+  pointer-events:none;
+  z-index:1000;
+  white-space:nowrap;
+}
+#toast.show {
+  opacity:1;
+}
+
+/* Stats no rodapé */
+.footer-stats {
+  position:fixed;
+  bottom:10px;
+  right:16px;
+  font-family:'DM Mono',monospace;
+  font-size:.6rem;
+  color:var(--i3);
+  background:rgba(0,0,0,.4);
+  padding:4px 12px;
+  border-radius:20px;
+  pointer-events:none;
+  z-index:40;
+}
+
+@media (max-width:600px) {
+  .content-inner {
+    padding:24px 20px 100px;
+  }
+  .t-h1 .ed {
+    font-size:1.6rem;
+  }
+  .toolbar {
+    overflow-x:auto;
+    flex-wrap:nowrap;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- TELA DE LOGIN COM SENHA ÚNICA -->
+<div id="screen-login">
+  <div class="login-book">
+    <div class="login-frame">
+      <div class="login-ornament">✦ DIÁRIO PESSOAL ✦</div>
+      <div class="login-title">📖 Meu Diário</div>
+      <div class="login-sub">ideias · projetos · anotações</div>
+      
+      <input type="password" id="senha-input" class="login-input" placeholder="Sua senha secreta" autofocus>
+      <button class="login-btn" onclick="verificarSenha()">🔓 Abrir Diário</button>
+      
+      <div id="login-error" class="login-error"></div>
+      <div class="login-hint">✦ Apenas você tem acesso ✦</div>
+    </div>
+  </div>
+</div>
+
+<!-- EDITOR PRINCIPAL -->
+<div id="screen-editor">
+  <div class="toolbar">
+    <button class="t-btn" onclick="sair()">← Sair</button>
+    <div style="width:1px;height:24px;background:rgba(255,255,255,.1)"></div>
+    <span class="t-nav-inf" id="nav-inf">Página 1</span>
+    <button class="t-btn" onclick="novaPagina()">+ Nova Página</button>
+    <div class="t-gap"></div>
+    <button class="t-btn" onclick="exportarPDF()">📄 PDF</button>
+    <button class="t-btn danger" onclick="deletarPagina()">🗑 Página</button>
+  </div>
+
+  <div class="content-area" id="content-area">
+    <div class="content-inner" id="content-inner">
+      <div id="conteudo-pagina"></div>
+    </div>
+  </div>
+
+  <div class="shelf">
+    <div class="shelf-lbl">➕ Adicionar bloco</div>
+    <div class="shelf-row">
+      <div class="s-item" onclick="adicionarBloco('h1')">📌 Título</div>
+      <div class="s-item" onclick="adicionarBloco('h2')">📝 Subtítulo</div>
+      <div class="s-item" onclick="adicionarBloco('p')">✍️ Texto</div>
+      <div class="s-item" onclick="adicionarBloco('q')">❝ Citação</div>
+      <div class="s-item" onclick="adicionarBloco('checklist')">✅ Checklist</div>
+    </div>
+  </div>
+
+  <div class="footer-stats" id="footer-stats"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ========== CONFIGURAÇÃO DA SENHA ==========
+// ⚠️ ATENÇÃO: Altere esta senha para a que você quiser!
+// Este arquivo será commitado no GitHub, mas a senha fica aqui.
+// Para mais segurança, veja o README sobre como usar config.js externo.
+
+const SENHA_CORRETA = "minhaSenha123";  // ← ALTERE AQUI PARA SUA SENHA!
+
+// ========== ESTADO DO APP ==========
+let dados = {
+  paginas: [[
+    { tipo: 'h1', txt: 'Bem-vindo ao seu Diário' },
+    { tipo: 'p', txt: 'Aqui você pode anotar ideias, planejar projetos e registrar aprendizados. Comece editando este texto!' },
+    { tipo: 'checklist', itens: [{ texto: 'Explorar os blocos disponíveis', feito: false }, { texto: 'Criar sua primeira página', feito: false }] }
+  ]],
+  paginaAtual: 0,
+  titulo: "Meu Diário"
+};
+
+let chaveStorage = 'diario_pessoal_data';
+
+// ========== FUNÇÕES DE SEGURANÇA ==========
+function verificarSenha() {
+  const senha = document.getElementById('senha-input').value;
+  const errorDiv = document.getElementById('login-error');
+  
+  if (senha === SENHA_CORRETA) {
+    carregarDados();
+    document.getElementById('screen-login').style.display = 'none';
+    document.getElementById('screen-editor').style.display = 'flex';
+    renderizarPagina();
+    atualizarStats();
+    toast('Bem-vindo(a)! ✦');
+  } else {
+    errorDiv.textContent = '❌ Senha incorreta. Tente novamente.';
+    document.getElementById('senha-input').value = '';
+    document.getElementById('senha-input').focus();
+  }
+}
+
+// Permitir Enter no campo de senha
+document.getElementById('senha-input')?.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') verificarSenha();
+});
+
+// ========== PERSISTÊNCIA ==========
+function salvarDados() {
+  try {
+    // Coletar conteúdo atual antes de salvar
+    coletarConteudo();
+    localStorage.setItem(chaveStorage, JSON.stringify(dados));
+    atualizarStats();
+  } catch(e) {
+    toast('Erro ao salvar');
+  }
+}
+
+function carregarDados() {
+  const salvo = localStorage.getItem(chaveStorage);
+  if (salvo) {
+    try {
+      const parsed = JSON.parse(salvo);
+      dados = { ...dados, ...parsed };
+    } catch(e) {}
+  }
+}
+
+function coletarConteudo() {
+  const container = document.getElementById('conteudo-pagina');
+  const blocos = container.querySelectorAll('.bloco');
+  const pagAtual = dados.paginas[dados.paginaAtual] || [];
+  
+  blocos.forEach((bloco, idx) => {
+    const tipo = bloco.dataset.tipo;
+    const b = pagAtual[idx];
+    if (!b) return;
+    
+    if (tipo === 'h1' || tipo === 'h2' || tipo === 'p') {
+      const ed = bloco.querySelector('.ed');
+      if (ed) b.txt = ed.textContent;
+    }
+    else if (tipo === 'q') {
+      const ed = bloco.querySelector('.ed');
+      if (ed) b.txt = ed.textContent;
+    }
+    else if (tipo === 'checklist') {
+      const itens = [];
+      bloco.querySelectorAll('.checklist-item').forEach(item => {
+        const check = item.querySelector('.checklist-check');
+        const text = item.querySelector('.checklist-text');
+        if (text) {
+          itens.push({
+            texto: text.textContent,
+            feito: check ? check.checked : false
+          });
+        }
+      });
+      b.itens = itens;
+    }
+  });
+}
+
+// ========== RENDERIZAÇÃO ==========
+function renderizarPagina() {
+  const container = document.getElementById('conteudo-pagina');
+  container.innerHTML = '';
+  
+  const pagAtual = dados.paginas[dados.paginaAtual] || [];
+  
+  pagAtual.forEach((bloco, idx) => {
+    const el = criarBlocoDOM(bloco, idx);
+    if (el) container.appendChild(el);
+  });
+  
+  document.getElementById('nav-inf').textContent = `Página ${dados.paginaAtual + 1} de ${dados.paginas.length}`;
+  atualizarStats();
+}
+
+function criarBlocoDOM(bloco, idx) {
+  const div = document.createElement('div');
+  div.className = 'bloco';
+  div.dataset.tipo = bloco.tipo;
+  div.dataset.idx = idx;
+  
+  // Ferramentas do bloco
+  const tools = document.createElement('div');
+  tools.className = 'bloco-tools';
+  tools.innerHTML = `
+    <button class="bloco-tool" onclick="moverBloco(${idx}, -1)">↑</button>
+    <button class="bloco-tool" onclick="moverBloco(${idx}, 1)">↓</button>
+    <button class="bloco-tool del" onclick="deletarBloco(${idx})">✕</button>
+  `;
+  div.appendChild(tools);
+  
+  // Conteúdo baseado no tipo
+  const contentDiv = document.createElement('div');
+  
+  switch(bloco.tipo) {
+    case 'h1':
+      contentDiv.className = 't-h1';
+      contentDiv.innerHTML = `<div class="ed" contenteditable="true" data-ph="Título principal...">${escapeHtml(bloco.txt || '')}</div>`;
+      break;
+    case 'h2':
+      contentDiv.className = 't-h2';
+      contentDiv.innerHTML = `<div class="ed" contenteditable="true" data-ph="Subtítulo...">${escapeHtml(bloco.txt || '')}</div>`;
+      break;
+    case 'p':
+      contentDiv.className = 't-p';
+      contentDiv.innerHTML = `<div class="ed" contenteditable="true" data-ph="Escreva aqui...">${escapeHtml(bloco.txt || '')}</div>`;
+      break;
+    case 'q':
+      contentDiv.className = 't-q';
+      contentDiv.innerHTML = `<blockquote><div class="ed" contenteditable="true" data-ph="Uma citação inspiradora...">${escapeHtml(bloco.txt || '')}</div></blockquote>`;
+      break;
+    case 'checklist':
+      contentDiv.className = 't-checklist';
+      let itensHtml = '';
+      (bloco.itens || []).forEach((item, i) => {
+        itensHtml += `
+          <div class="checklist-item ${item.feito ? 'done' : ''}">
+            <input type="checkbox" class="checklist-check" ${item.feito ? 'checked' : ''} onchange="toggleChecklistItem(${idx}, ${i}, this.checked)">
+            <input type="text" class="checklist-text" value="${escapeHtml(item.texto)}" onblur="updateChecklistText(${idx}, ${i}, this.value)">
+          </div>
+        `;
+      });
+      contentDiv.innerHTML = `
+        ${itensHtml}
+        <button class="checklist-add" onclick="addChecklistItem(${idx})">+ Adicionar item</button>
+      `;
+      break;
+    default:
+      return null;
+  }
+  
+  div.appendChild(contentDiv);
+  
+  // Evento de blur para salvar automaticamente
+  if (bloco.tipo !== 'checklist') {
+    const ed = div.querySelector('.ed');
+    if (ed) {
+      ed.addEventListener('blur', () => salvarDados());
+    }
+  }
+  
+  return div;
+}
+
+// ========== OPERAÇÕES COM BLOCOS ==========
+function adicionarBloco(tipo) {
+  let novoBloco = { tipo };
+  
+  if (tipo === 'h1') novoBloco.txt = '';
+  else if (tipo === 'h2') novoBloco.txt = '';
+  else if (tipo === 'p') novoBloco.txt = '';
+  else if (tipo === 'q') novoBloco.txt = '';
+  else if (tipo === 'checklist') novoBloco.itens = [{ texto: 'Novo item', feito: false }];
+  
+  dados.paginas[dados.paginaAtual].push(novoBloco);
+  renderizarPagina();
+  salvarDados();
+  
+  // Scroll para o novo bloco
+  setTimeout(() => {
+    const blocos = document.querySelectorAll('.bloco');
+    const ultimo = blocos[blocos.length - 1];
+    if (ultimo) ultimo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 50);
+}
+
+function deletarBloco(idx) {
+  dados.paginas[dados.paginaAtual].splice(idx, 1);
+  renderizarPagina();
+  salvarDados();
+  toast('Bloco removido');
+}
+
+function moverBloco(idx, direcao) {
+  const pag = dados.paginas[dados.paginaAtual];
+  const novoIdx = idx + direcao;
+  if (novoIdx < 0 || novoIdx >= pag.length) return;
+  [pag[idx], pag[novoIdx]] = [pag[novoIdx], pag[idx]];
+  renderizarPagina();
+  salvarDados();
+}
+
+// ========== OPERAÇÕES COM CHECKLIST ==========
+function toggleChecklistItem(blocoIdx, itemIdx, checked) {
+  const bloco = dados.paginas[dados.paginaAtual][blocoIdx];
+  if (bloco && bloco.itens && bloco.itens[itemIdx]) {
+    bloco.itens[itemIdx].feito = checked;
+    salvarDados();
+    renderizarPagina(); // Re-render para atualizar classe done
+  }
+}
+
+function updateChecklistText(blocoIdx, itemIdx, texto) {
+  const bloco = dados.paginas[dados.paginaAtual][blocoIdx];
+  if (bloco && bloco.itens && bloco.itens[itemIdx]) {
+    bloco.itens[itemIdx].texto = texto;
+    salvarDados();
+  }
+}
+
+function addChecklistItem(blocoIdx) {
+  const bloco = dados.paginas[dados.paginaAtual][blocoIdx];
+  if (bloco && bloco.tipo === 'checklist') {
+    if (!bloco.itens) bloco.itens = [];
+    bloco.itens.push({ texto: 'Novo item', feito: false });
+    renderizarPagina();
+    salvarDados();
+  }
+}
+
+// ========== OPERAÇÕES COM PÁGINAS ==========
+function novaPagina() {
+  dados.paginas.push([]);
+  dados.paginaAtual = dados.paginas.length - 1;
+  renderizarPagina();
+  salvarDados();
+  toast('Nova página criada ✦');
+}
+
+function deletarPagina() {
+  if (dados.paginas.length === 1) {
+    toast('Você precisa manter pelo menos uma página');
+    return;
+  }
+  if (confirm('Tem certeza que quer deletar esta página?')) {
+    dados.paginas.splice(dados.paginaAtual, 1);
+    if (dados.paginaAtual >= dados.paginas.length) {
+      dados.paginaAtual = dados.paginas.length - 1;
+    }
+    renderizarPagina();
+    salvarDados();
+    toast('Página removida');
+  }
+}
+
+function atualizarStats() {
+  const totalBlocos = dados.paginas.reduce((acc, p) => acc + p.length, 0);
+  const totalPaginas = dados.paginas.length;
+  document.getElementById('footer-stats').textContent = `📄 ${totalPaginas} páginas · 📝 ${totalBlocos} blocos`;
+}
+
+// ========== EXPORTAÇÃO PDF ==========
+async function exportarPDF() {
+  toast('Gerando PDF... ⏳');
+  
+  const element = document.getElementById('content-area');
+  const opt = {
+    margin: [0.5, 0.5, 0.5, 0.5],
+    filename: `diario-pagina-${dados.paginaAtual + 1}.pdf`,
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+  
+  try {
+    await html2pdf().set(opt).from(element).save();
+    toast('PDF gerado! ✦');
+  } catch(e) {
+    toast('Erro ao gerar PDF');
+  }
+}
+
+// ========== SAIR ==========
+function sair() {
+  salvarDados();
+  document.getElementById('screen-editor').style.display = 'none';
+  document.getElementById('screen-login').style.display = 'flex';
+  document.getElementById('senha-input').value = '';
+  document.getElementById('login-error').textContent = '';
+}
+
+// ========== UTILITÁRIOS ==========
+function escapeHtml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function toast(msg, duration = 2000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// Auto-save a cada 30 segundos
+setInterval(() => {
+  if (document.getElementById('screen-editor').style.display === 'flex') {
+    salvarDados();
+  }
+}, 30000);
+</script>
+</body>
+  </html>
