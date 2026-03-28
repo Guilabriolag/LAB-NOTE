@@ -1,0 +1,10 @@
+# Arquivo de configuração com senha (se usar versão externa)
+config.js
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Backup de editor
+*.bak
+*.swp
